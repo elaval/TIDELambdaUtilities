@@ -1,0 +1,39 @@
+language: node_js
+node_js:
+- '6.9.1'
+
+
+branches:
+  only:
+    - master
+
+install:
+  - pip install --user awscli # install aws cli w/o sudo
+  - export PATH=$PATH:$HOME/.local/bin # put aws in the path
+
+before_script: 
+  - mkdir dist
+  - cd src
+  
+script:
+  - npm install
+  - zip -r dep.zip .
+  - mv dep.zip ../dist
+  - cd ..
+
+deploy:
+  provider: s3
+  access_key_id: $AWS_ACCESS_KEY_ID
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  bucket: visualiza.tideapps.com
+  skip_cleanup: true
+  upload-dir: lambda/TIDELambdaUtilities
+  local_dir: dist
+
+after_deploy:
+  - aws lambda update-function-code --function TIDELambdaUtilities --s3-bucket visualiza.tideapps.com --s3-key lambda/TIDELambdaUtilities/dep.zip --region us-east-1
+
+notifications:
+  email:
+    on_failure: change
+    on_success: change
