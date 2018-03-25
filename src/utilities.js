@@ -17,6 +17,15 @@ let cachedDb = null;
 let database = "general_data";
 let collectionName = null;
 
+const PATHS = [
+    {'path': '/geo/cl/regiones/', 'handler': testHandler}
+]
+
+function testHandler(event, context, callback) {
+    const response = buildResponse(201, {a:1});
+    callback(null, response);
+}
+
 const collectionHandlers = {
     "evidence" : {
         "GET": listItems,
@@ -58,6 +67,20 @@ const collections = {
 
 // Evidence 2
 exports.handler = (event, context, callback) => {
+
+    let resource = event.resource;
+    
+    PATHS.forEach(d => {
+        var re = new RegExp(d.path,'i');
+        if (resource.match(re)) {
+            d.handler(event, context, callback);
+            return;
+        }
+
+    })
+
+    /*
+
     var uri = process.env['MONGODB_ATLAS_CLUSTER_URI'] || null;
     console.log("URI", uri);
     
@@ -69,6 +92,7 @@ exports.handler = (event, context, callback) => {
         console.log('the Atlas connection string is ' + atlas_connection_uri);
         processEvent(event, context, callback);
     } 
+    */
 };
 
 function processEvent(event, context, callback) {
