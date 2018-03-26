@@ -8,13 +8,13 @@ const dataStorage = require('./dataStorage');
 // Get claims from Authorization JWT token
 api.use(function(req,res,next) {
     if (req.headers.Authorization) {
-        const token = req.headers['Authorization'];
+        const token = req.headers['Authorization'] || req.headers['authorization'];
         const tokenData = token.split('.')[1];
         const buf = Buffer.from(tokenData, 'base64').toString();
         const claims = JSON.parse(buf);
         req.claims = claims;
-    } else if (req.params.access_key) {
-        const claims = dataStorage.getClaimsFromKey(req.params.access_key)
+    } else if (req.query.access_key) {
+        const claims = dataStorage.getClaimsFromKey(req.query.access_key)
         req.claims = claims;
     } 
     if (req.claims && req.claims.sub) {
