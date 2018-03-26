@@ -9,7 +9,7 @@
             "request": "attach",
             "name": "Attach to Remote",
             "address": "localhost",
-            "port": 5861,
+            "port": 5860,
             "localRoot": "${workspaceFolder}/src",
             "remoteRoot": "/var/task"
         }
