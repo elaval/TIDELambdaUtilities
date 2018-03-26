@@ -62,6 +62,11 @@ api.post('/process/:id/event', (req,res) => {
     })
 })
 
+api.get('/process/echo', (req,res) => {
+    const user = req.claims && req.claims.sub;
+
+    res.status(200).json({headers: req.headers, query:req.query, params : req.params, req:req})
+})
 
  
 // Declare your Lambda handler
