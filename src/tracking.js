@@ -33,6 +33,9 @@ api.get('/process', function(req,res) {
     .then(d => {
         res.status(200).json({ data:d })
     })
+    .catch(err => {
+        res.status(200).json({ "msg":"ERROR caught in post /process", "error": err })
+    })
 })
 
 api.get('/process/:id', function(req,res) {
@@ -51,6 +54,7 @@ api.post('/process', (req,res) => {
     .then(d => {
         res.status(200).json({ process: req.params.id, data:d })
     })
+
 })
 
 api.post('/process/:id/event', (req,res) => {
@@ -79,6 +83,17 @@ module.exports.handler = (event, context, callback) => {
         // Run the request
         api.run(event, context, callback)
   })
+  .catch(err => {
+    const response = {
+        statusCode: 201,
+        headers: {
+            "Content-Type" : "application/json",
+          },
+        body: JSON.stringify({"msg":"ERROR at initial dBConnection", "error": err})
+    };
+
+    callback(null, response);
+  });
 
 
 }

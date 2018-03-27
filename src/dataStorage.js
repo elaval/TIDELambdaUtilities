@@ -28,17 +28,8 @@ class DataStorage {
                     })
                     .catch(err => {
                         reject(err);
-                    })
-/*
-                    MongoClient.connect(uri,  (err, db) => {
-                        if (err) {
-                            reject(err);                   
-                        } else {
-                            this.db = db;
-                            resolve(db)
-                        }
                     });
-                    */
+
                 }
                 catch (err) {
                     reject(err);
