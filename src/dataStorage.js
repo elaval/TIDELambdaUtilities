@@ -11,7 +11,7 @@ class DataStorage {
 
     dBConnection() {
         const resolver = (resolve, reject) => {
-            if (this.db) {
+            if (this.db && this.db.serverConfig.isConnected()) {
                 resolve(this.db)
             } else {
 

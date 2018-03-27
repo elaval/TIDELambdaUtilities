@@ -72,6 +72,12 @@ api.get('/process/echo', (req,res) => {
 // Declare your Lambda handler
 module.exports.handler = (event, context, callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
+
+  dataStorage.dBConnection()
+  .then(() => {
+      console.log("DB Connected");
+  })
+  
   // Run the request
   api.run(event, context, callback)
 }
