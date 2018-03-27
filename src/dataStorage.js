@@ -11,7 +11,7 @@ class DataStorage {
 
     dBConnection() {
         const resolver = (resolve, reject) => {
-            if (this.db && this.db.serverConfig.isConnected()) {
+            if (this.db && (!this.db.serverConfig || this.db.serverConfig.isConnected())) {
                 resolve(this.db)
             } else {
 
@@ -20,6 +20,16 @@ class DataStorage {
                 
                 try {
                     console.log('=> connecting to database');
+
+                    MongoClient.connect(uri)
+                    .then(db => {
+                        this.db = db;
+                        resolve(db)
+                    })
+                    .catch(err => {
+                        reject(err);
+                    })
+/*
                     MongoClient.connect(uri,  (err, db) => {
                         if (err) {
                             reject(err);                   
@@ -28,6 +38,7 @@ class DataStorage {
                             resolve(db)
                         }
                     });
+                    */
                 }
                 catch (err) {
                     reject(err);
@@ -104,7 +115,7 @@ class DataStorage {
                 return cursor.toArray();  // Promise
             })
             .then(data => {
-                dbConnection.close();
+                // dbConnection.close();
                 resolve(data);
             })
             .catch(err => {

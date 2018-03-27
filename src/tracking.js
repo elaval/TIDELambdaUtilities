@@ -75,11 +75,12 @@ module.exports.handler = (event, context, callback) => {
 
   dataStorage.dBConnection()
   .then(() => {
-      console.log("DB Connected");
+        console.log("DB Connected");
+        // Run the request
+        api.run(event, context, callback)
   })
-  
-  // Run the request
-  api.run(event, context, callback)
+
+
 }
 
 
