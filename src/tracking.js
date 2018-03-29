@@ -13,12 +13,13 @@ api.use(function(req,res,next) {
         const buf = Buffer.from(tokenData, 'base64').toString();
         const claims = JSON.parse(buf);
         req.claims = claims;
+        next();
     } else if (req.query.access_key) {
         const claims = dataStorage.getClaimsFromKey(req.query.access_key)
-        req.claims = claims;
-    } 
-    if (req.claims && req.claims.sub) {
-        next()
+        .then(claims => {
+            req.claims = claims;
+            next();
+        })
     } else {
         res.status(401).error('Not Authorized')
     }
@@ -72,6 +73,42 @@ api.get('/process/echo', (req,res) => {
     res.status(200).json({headers: req.headers, query:req.query, params : req.params, req:req})
 })
 
+
+api.post('/process/:id/event', (req,res) => {
+    const user = req.claims && req.claims.sub;
+
+    dataStorage.createEvent(user, req.params.id, req.body)
+    .then(d => {
+        res.status(200).json({ process: req.params.id, data:d })
+    })
+})
+
+api.post('/token', (req,res) => {
+    const user = req.claims && req.claims.sub;
+
+    dataStorage.createToken(user)
+    .then(d => {
+        res.status(200).json({ token: d })
+    })
+})
+
+api.get('/token/:token', (req,res) => {
+    const token = req.params && req.params.token;
+
+    dataStorage.getToken(token)
+    .then(d => {
+        res.status(200).json({ token: d })
+    })
+})
+
+api.get('/token', (req,res) => {
+    const user = req.claims && req.claims.sub;
+    
+    dataStorage.getTokenCollection(user)
+    .then(d => {
+        res.status(200).json({ data: d })
+    })
+})
  
 // Declare your Lambda handler
 module.exports.handler = (event, context, callback) => {

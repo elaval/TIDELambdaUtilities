@@ -2,6 +2,7 @@ let  MongoClient = require('mongodb').MongoClient;
 const _ = require("lodash");
 let  ObjectID = require('mongodb').ObjectID;
 let  ACCESS_KEYS = require("config").ACCESS_KEYS;
+const uuidv4 = require('uuid/v4');
 
 class DataStorage {
 
@@ -196,10 +197,109 @@ class DataStorage {
 
     }
 
-    getClaimsFromKey(key) {
-        return ACCESS_KEYS[key] || {};
+    createToken(user) {
+        let dbConnection;
+
+        return new Promise((resolve, reject) => {
+            this.dBConnection()
+            .then(conn => {
+                dbConnection = conn;
+                const collection = dbConnection.db('general_data').collection('token');
+    
+                let objectToInsert = {
+                    token: uuidv4(),
+                    user: user
+                };                 
+            
+                collection.insertOne(objectToInsert)
+                .then((r) => {                
+                    resolve(objectToInsert);
+                })
+                .catch((err) => {
+                    reject(err);
+                })
+            
+            })             
+            .catch(err => {
+                reject(err);
+            })
+
+ 
+        })
     }
 
+    getToken(token) {
+        let dbConnection;
+
+        return new Promise((resolve, reject) => {
+            this.dBConnection()
+            .then(conn => {
+                dbConnection = conn;
+                const collection = dbConnection.db('general_data').collection('token');
+    
+        
+                const options = {
+                    "limit": 20
+                };
+            
+                collection.findOne({'token':token})
+                .then(d => {
+                    resolve(d);
+                })
+                .catch(err => {
+                    reject(err);
+                })
+                
+            })                
+            .catch(err => {
+                reject(err);
+            })
+
+ 
+        }) 
+    }
+
+    getTokenCollection(user) {
+        let dbConnection;
+
+        return new Promise((resolve, reject) => {
+            this.dBConnection()
+            .then(conn => {
+                dbConnection = conn;
+                const collection = dbConnection.db('general_data').collection('token');
+    
+        
+                const options = {
+                    "limit": 20
+                };
+            
+                var cursor = collection.find({user: user});
+                
+                return cursor.toArray();  // Promise
+            })
+            .then(data => {
+                // dbConnection.close();
+                resolve(data);
+            })
+            .catch(err => {
+                reject(err);
+            })
+        })
+    }
+
+
+    getClaimsFromKey(key) {
+        return new Promise((resolve, reject) => {
+            this.getToken(key)
+            .then(d => {
+                const claim = {
+                    "sub": d.user
+                }
+                resolve(claim);
+            })
+            .catch(err => reject(err));
+        })
+    }
 
 }
 
