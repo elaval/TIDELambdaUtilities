@@ -83,32 +83,6 @@ api.post('/process/:id/event', (req,res) => {
     })
 })
 
-api.post('/token', (req,res) => {
-    const user = req.claims && req.claims.sub;
-
-    dataStorage.createToken(user)
-    .then(d => {
-        res.status(200).json({ token: d })
-    })
-})
-
-api.get('/token/:token', (req,res) => {
-    const token = req.params && req.params.token;
-
-    dataStorage.getToken(token)
-    .then(d => {
-        res.status(200).json({ token: d })
-    })
-})
-
-api.get('/token', (req,res) => {
-    const user = req.claims && req.claims.sub;
-    
-    dataStorage.getTokenCollection(user)
-    .then(d => {
-        res.status(200).json({ data: d })
-    })
-})
  
 // Declare your Lambda handler
 module.exports.handler = (event, context, callback) => {
