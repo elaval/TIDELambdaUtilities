@@ -197,6 +197,38 @@ class DataStorage {
     }
 
 
+    getToken(token) {
+        let dbConnection;
+
+        return new Promise((resolve, reject) => {
+            this.dBConnection()
+            .then(conn => {
+                dbConnection = conn;
+                const collection = dbConnection.db('general_data').collection('token');
+    
+        
+                const options = {
+                    "limit": 20
+                };
+            
+                collection.findOne({'token':token})
+                .then(d => {
+                    resolve(d);
+                })
+                .catch(err => {
+                    reject(err);
+                })
+                
+            })                
+            .catch(err => {
+                reject(err);
+            })
+
+ 
+        }) 
+    }
+
+
     getClaimsFromKey(key) {
         return new Promise((resolve, reject) => {
             this.getToken(key)
