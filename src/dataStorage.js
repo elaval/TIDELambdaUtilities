@@ -1,7 +1,6 @@
 let  MongoClient = require('mongodb').MongoClient;
 const _ = require("lodash");
 let  ObjectID = require('mongodb').ObjectID;
-let  ACCESS_KEYS = require("config").ACCESS_KEYS;
 const uuidv4 = require('uuid/v4');
 
 class DataStorage {
